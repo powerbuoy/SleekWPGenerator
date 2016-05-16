@@ -1,0 +1,21 @@
+{
+  "name": "generator-sleekwp",
+  "version": "0.1.0",
+  "description": "Installs latest WordPress, the SleekWP theme and sets up a starter child theme based on SleekChild.",
+  "files": [
+    "app"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "basename": "^0.1.2",
+    "chalk": "^1.1.3",
+    "fs-extra": "^0.28.0",
+    "glob": "^7.0.3",
+    "mysql": "^2.10.2",
+    "replace": "^0.3.0",
+    "sudo": "^1.0.3",
+    "yeoman-generator": "^0.22.5"
+  }
+}
