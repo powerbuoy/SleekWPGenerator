@@ -56,6 +56,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 
 		this.log(chalkImportant('Welcome! Follow these easy steps and you\'ll soon have WordPress and SleekWP installed.'));
 		this.log(chalkNormal('Your domain will be http://' + this.localDomain + ', your theme name will be "' + this.appname + '"\nand I will also go ahead and create a database for WP called "' + this.dbName + '"\nwith a table prefix of ' + this.dbTblPrefix));
+		this.log(chalkNormal('Finally, your admin account will be inviseadmin:password'));
 	},
 
 	/**
@@ -99,7 +100,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 				type: 'input',
 				name: 'wpPlugins',
 				message: 'Comma separated list of WordPress plugins you would like to install:',
-				default: 'advanced-custom-fields, wordpress-seo, wp-smushit, duplicate-post, regenerate-thumbnails, post-type-archive-links'
+				default: 'advanced-custom-fields, wordpress-seo, wp-smushit, duplicate-post, regenerate-thumbnails, post-type-archive-links, clean-image-filenames, simple-301-redirects'
 			}
 		], function (answers) {
 			this.dbUser = answers.dbUser;
@@ -139,7 +140,12 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 				}
 
 				// Remove newly unzipped wordpress-directory
-				fs.remove('wordpress');
+				fs.remove(this.destinationPath('wordpress'));
+
+				// Also remove the default themes
+				fs.remove(this.destinationPath('wp-content/themes/twentyfifteen'));
+				fs.remove(this.destinationPath('wp-content/themes/twentyfourteen'));
+				fs.remove(this.destinationPath('wp-content/themes/twentysixteen'));
 
 				this.log(chalkSuccess('WordPress installed!'));
 
@@ -318,6 +324,12 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 				dbTblPrefix: this.dbTblPrefix
 			});
 
+			this.fs.copyTpl(this.templatePath('db.sql'), this.destinationPath('db.sql'), {
+				appname: this.appname,
+				localDomain: this.localDomain,
+				dbTblPrefix: this.dbTblPrefix
+			});
+
 			this.fs.copyTpl(this.templatePath('_htaccess'), this.destinationPath('.htaccess'));
 			this.fs.copyTpl(this.templatePath('_gitignore'), this.destinationPath('.gitignore'));
 		},
@@ -378,7 +390,8 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 			var connection = mysql.createConnection({
 				host: this.dbHost,
 				user: this.dbUser,
-				password: this.dbPass
+				password: this.dbPass,
+				multipleStatements: true
 			});
 
 			connection.connect(function (err) {
@@ -388,6 +401,10 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 					return done(err);
 				}
 
+				var db = fs.readFileSync(this.destinationPath('db.sql'), {
+					encoding: 'utf8'
+				});
+
 				connection.query('CREATE DATABASE IF NOT EXISTS ' + mysql.escapeId(this.dbName), function (err, rows, fields) {
 					if (err) {
 						this.log(chalkError(err));
@@ -395,11 +412,25 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 						return done(err);
 					}
 
-					this.log(chalkSuccess('Database "' + this.dbName + '" successfully created!'));
+					connection.query('USE ' + mysql.escapeId(this.dbName), function (err, rows, fields) {
+						if (err) {
+							this.log(chalkError(err));
 
-					connection.end();
+							return done(err);
+						}
 
-					done();
+						connection.query(db, function (err, rows, fields) {
+							if (err) {
+								this.log(chalkError(err));
+
+								return done(err);
+							}
+
+							connection.end();
+
+							done();
+						}.bind(this));
+					}.bind(this));
 				}.bind(this));
 			}.bind(this));
 		},

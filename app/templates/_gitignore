@@ -1,6 +1,5 @@
 # Our ignores
 .htaccess
-searchreplacedb2.php
 
 # Ignore WP core
 *~
