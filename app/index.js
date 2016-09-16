@@ -248,37 +248,6 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 	},
 
 	/**
-	 * Installs SleekCSS
-	 */
-	installSleekCSS: function () {
-		this.log(chalkNormal('\n\nInstalling SleekCSS...'));
-
-		var done = this.async();
-
-		// Fetch latest version of SleekWP from GitHub
-		this.remote('powerbuoy', 'SleekCSS', 'master', function (err, remote) {
-			if (err) {
-				this.log(chalkError('ERROR: ' + err));
-
-				return done(err);
-			}
-
-			// Copy SleekWP to theme directory
-			fs.copy(this.cacheRoot() + '/powerbuoy/SleekCSS/master/', this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/SleekCSS/'), function (err) {
-				if (err) {
-					this.log(chalkError('ERROR: ' + err));
-
-					return done(err);
-				}
-
-				this.log(chalkSuccess('SleekCSS installed!'));
-
-				done();
-			}.bind(this));
-		}.bind(this), true);
-	},
-
-	/**
 	 * Do some writing
 	 */
 	writing: {

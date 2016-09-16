@@ -1,15 +1,13 @@
-// Third party
-@import "../../node_modules/normalize-css/normalize";
+// Our config
+@import "config";
 
 // Icons (generated)
 @import "icon-vars";
 @import "icons";
 
-// Our config
-@import "config";
-
-// SleekCSS
-@import "SleekCSS/sleek-css.scss";
+// Third party
+@import "../../node_modules/normalize-css/normalize";
+@import "../../node_modules/sleek-css/sleek-css.scss";
 
 // General styling
 @import "general";
