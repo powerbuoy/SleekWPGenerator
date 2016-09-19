@@ -441,6 +441,8 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 					cwd: this.destinationPath('wp-content/themes/' + this.appname + '/')
 				}).on('close', function () {
 					this.log(chalkSuccess('NPM Install ran successfully on child theme!'));
+
+					done();
 				}.bind(this));
 			}.bind(this));
 		},
@@ -489,7 +491,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		},
 
 		/**
-		 * Runu Gulp
+		 * Run Gulp
 		 */
 		gulp: function () {
 			this.log(chalkNormal('\n\nRunning gulp'));
