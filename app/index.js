@@ -301,49 +301,6 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 
 			this.fs.copyTpl(this.templatePath('_htaccess'), this.destinationPath('.htaccess'));
 			this.fs.copyTpl(this.templatePath('_gitignore'), this.destinationPath('.gitignore'));
-		},
-
-		/**
-		 * Copies all SleekCSS config and its general.scss file to project folder
-		 */
-		setupSleekCSS: function () {
-			this.log(chalkNormal('\n\nSetting up SleekCSS config and general.scss...'));
-
-			var done = this.async();
-
-			// Remove SleekChild's default all.scss
-			fs.remove(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/all.scss'));
-
-			// Copy our template (based on the theme using SleekCSS)
-			this.fs.copyTpl(this.templatePath('all.scss'), this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/all.scss'));
-
-			// Move SleekCSS's general.scss to our sass directory
-			fs.copySync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/SleekCSS/general.scss'), this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/general.scss'));
-
-			// Create directories for components and modules
-			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/modules/_my-module.scss'), '/**\n * Example Module\n */\n#my-module {\n\tbackground: red;\n}');
-			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/components/_my-component.scss'), '/**\n * Example Component\n */\n.my-component {\n\tbackground: blue;\n}');
-
-			// Generate a config.scss from all SleekCSS/config/*.scss files
-			glob(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/SleekCSS/config/*.scss'), {}, function (err, files) {
-				var output = '';
-
-				files.forEach(function (file) {
-					output += '/**\n * ' + ucfirst(basename(file).replace('_', '')).replace('-', ' ') + '\n */\n' + fs.readFileSync(file) + '\n';
-				}.bind(this));
-
-				fs.writeFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/config.scss'), output);
-
-				replace({
-					regex: ' !default;',
-					replacement: ';',
-					paths: [this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/config.scss')],
-					recursive: false,
-					silent: true
-				});
-
-				done();
-			}.bind(this));
 		}
 	},
 
@@ -484,17 +441,68 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 					cwd: this.destinationPath('wp-content/themes/' + this.appname + '/')
 				}).on('close', function () {
 					this.log(chalkSuccess('NPM Install ran successfully on child theme!'));
-					this.log(chalkNormal('\n\nRunning gulp'));
-
-					// Run Gulp
-					this.spawnCommand('gulp', [], {
-						cwd: this.destinationPath('wp-content/themes/' + this.appname + '/')
-					}).on('close', function () {
-						this.log(chalkSuccess('Gulp ran successfully!'));
-
-						done();
-					}.bind(this));
 				}.bind(this));
+			}.bind(this));
+		},
+
+		/**
+		 * Copies all SleekCSS config and its general.scss file to project folder
+		 */
+		setupSleekCSS: function () {
+			this.log(chalkNormal('\n\nSetting up SleekCSS config and general.scss...'));
+
+			var done = this.async();
+
+			// Remove SleekChild's default all.scss
+			fs.remove(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/all.scss'));
+
+			// Copy our template (based on the theme using SleekCSS)
+			this.fs.copyTpl(this.templatePath('all.scss'), this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/all.scss'));
+
+			// Move SleekCSS's general.scss to our sass directory
+			fs.copySync(this.destinationPath('wp-content/themes/' + this.appname + '/node_modules/sleek-css/general.scss'), this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/general.scss'));
+
+			// Create directories for components and modules
+			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/modules/_my-module.scss'), '/**\n * Example Module\n */\n#my-module {\n\tbackground: red;\n}');
+			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/components/_my-component.scss'), '/**\n * Example Component\n */\n.my-component {\n\tbackground: blue;\n}');
+
+			// Generate a config.scss from all SleekCSS/config/*.scss files
+			glob(this.destinationPath('wp-content/themes/' + this.appname + '/node_modules/sleek-css/config/*.scss'), {}, function (err, files) {
+				var output = '';
+
+				files.forEach(function (file) {
+					output += '/**\n * ' + ucfirst(basename(file).replace('_', '')).replace('-', ' ') + '\n */\n' + fs.readFileSync(file) + '\n';
+				}.bind(this));
+
+				fs.writeFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/config.scss'), output);
+
+				replace({
+					regex: ' !default;',
+					replacement: ';',
+					paths: [this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/config.scss')],
+					recursive: false,
+					silent: true
+				});
+
+				done();
+			}.bind(this));
+		},
+
+		/**
+		 * Runu Gulp
+		 */
+		gulp: function () {
+			this.log(chalkNormal('\n\nRunning gulp'));
+
+			var done = this.async();
+
+			// Run Gulp
+			this.spawnCommand('gulp', [], {
+				cwd: this.destinationPath('wp-content/themes/' + this.appname + '/')
+			}).on('close', function () {
+				this.log(chalkSuccess('Gulp ran successfully!'));
+
+				done();
 			}.bind(this));
 		}
 	},
