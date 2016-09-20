@@ -270,7 +270,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		 * Creates wp-config, htaccess and gitignore file
 		 */
 		copyTemplates: function () {
-			this.log(chalkNormal('\n\nCreating wp-config.php, .htaccess and WP-Core .gitignore'));
+			this.log(chalkNormal('\n\nCreating wp-config.php, .htaccess, .gitignore and db.sql'));
 
 			this.fs.copyTpl(this.templatePath('wp-config.php'), this.destinationPath('wp-config.php'), {
 				dbName: this.dbName,
@@ -278,22 +278,14 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 				dbPass: this.dbPass,
 				dbHost: this.dbHost,
 				dbTblPrefix: this.dbTblPrefix
-			}, function (err, goo, bar) {
-				this.log(chalkError(err));
-				this.log(chalkError(goo));
-				this.log(chalkError(bar));
-			}.bind(this));
+			});
 
 			this.fs.copyTpl(this.templatePath('db.sql'), this.destinationPath('db.sql'), {
 				appname: this.appname,
 				localDomain: this.localDomain,
 				dbTblPrefix: this.dbTblPrefix,
 				wpUser: this.wpUser
-			}, function (err, goo, bar) {
-				this.log(chalkError(err));
-				this.log(chalkError(goo));
-				this.log(chalkError(bar));
-			}.bind(this));
+			});
 
 			this.fs.copyTpl(this.templatePath('_htaccess'), this.destinationPath('.htaccess'));
 			this.fs.copyTpl(this.templatePath('_gitignore'), this.destinationPath('.gitignore'));
@@ -304,7 +296,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Creates DB
 		 */
-		createDB: function () {
+		__createDB: function () {
 			this.log(chalkNormal('\n\nCreating database...'));
 
 			var done = this.async();
@@ -334,7 +326,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 						return done(err);
 					}
 
-					/* connection.query('USE ' + mysql.escapeId(this.dbName), function (err, rows, fields) {
+					 /* connection.query('USE ' + mysql.escapeId(this.dbName), function (err, rows, fields) {
 						if (err) {
 							this.log(chalkError(err));
 
@@ -351,7 +343,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 							connection.end();
 
 							done();
-					//	}.bind(this));
+						// }.bind(this));
 					// }.bind(this));
 				}.bind(this));
 			}.bind(this));
@@ -360,7 +352,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Sets up VHOST
 		 */
-		setupVHOST: function () {
+		__setupVHOST: function () {
 			this.log(chalkNormal('\n\nSetting up a VHOST pointing to http://' + this.localDomain + '/...'));
 
 			this.fs.copyTpl(this.templatePath('vhost.conf'), this.destinationPath('vhost.conf'), {
@@ -392,7 +384,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Initializes GIT
 		 */
-		initGIT: function () {
+		__initGIT: function () {
 			this.log(chalkNormal('\n\nInitializing GIT with username ' + this.gitUser + '...'));
 
 			var originURL = 'https://' + this.gitUser + '@bitbucket.org/' + this.gitTeam + '/' + this.appname + '.git';
@@ -420,7 +412,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Setup SleekWP as a GIT Submodule
 		 */
-		sleekGitSubmodule: function () {
+		__sleekGitSubmodule: function () {
 			this.log(chalkNormal('\n\nSetting up SleekWP as GIT Submodule...'));
 
 			var done = this.async();
@@ -441,7 +433,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * NPM Install
 		 */
-		npmInstall: function () {
+		__npmInstall: function () {
 			this.log(chalkNormal('\n\nRunning NPM Install on SleekWP...'));
 
 			var done = this.async();
@@ -467,7 +459,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Copies all SleekCSS config and its general.scss file to project folder
 		 */
-		setupSleekCSS: function () {
+		__setupSleekCSS: function () {
 			this.log(chalkNormal('\n\nSetting up SleekCSS config and general.scss...'));
 
 			var done = this.async();
@@ -482,7 +474,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 			fs.copySync(this.destinationPath('wp-content/themes/' + this.appname + '/node_modules/sleek-css/general.scss'), this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/general.scss'));
 
 			// Create directories for components and modules
-			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/modules/_my-module.scss'), '/**\n * Example Module\n */\n#my-module {\n\tbackground: red;\n}');
+			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/modules/_header.scss'), '/**\n * Header\n */\n#header {\n\t@include section;\n}');
 			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/components/_my-component.scss'), '/**\n * Example Component\n */\n.my-component {\n\tbackground: blue;\n}');
 
 			// Generate a config.scss from all SleekCSS/config/*.scss files
@@ -510,7 +502,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Run Gulp
 		 */
-		gulp: function () {
+		__gulp: function () {
 			this.log(chalkNormal('\n\nRunning gulp'));
 
 			var done = this.async();
