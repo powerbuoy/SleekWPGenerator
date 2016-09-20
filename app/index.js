@@ -132,7 +132,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 	/**
 	 * Downloads WP
 	 */
-	__downloadWP: function () {
+	downloadWP: function () {
 		this.log(chalkNormal('Downloading latest WordPress...'));
 
 		var done = this.async();
@@ -175,7 +175,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 	/**
 	 * Installs SleekChild
 	 */
-	__installSleekChild: function () {
+	installSleekChild: function () {
 		this.log(chalkNormal('\n\nInstalling SleekChild...'));
 
 		var done = this.async();
@@ -205,7 +205,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 	/**
 	 * Installs plugins
 	 */
-	__installWPPlugins: function () {
+	installWPPlugins: function () {
 		this.log(chalkNormal('\n\nInstalling WordPress plug-ins...'));
 
 		var done = this.async();
@@ -241,7 +241,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Rewrites SleekChild-functions
 		 */
-		__rewriteSleekChild: function () {
+		rewriteSleekChild: function () {
 			this.log(chalkNormal('\n\nRewriting SleekChild functions to ' + this.appname + '...'));
 
 			var functionsPath = this.destinationPath('wp-content/themes/' + this.appname + '/functions.php');
@@ -296,7 +296,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Creates DB
 		 */
-		__createDB: function () {
+		createDB: function () {
 			this.log(chalkNormal('\n\nCreating database...'));
 
 			var done = this.async();
@@ -326,7 +326,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 						return done(err);
 					}
 
-					 /* connection.query('USE ' + mysql.escapeId(this.dbName), function (err, rows, fields) {
+					 connection.query('USE ' + mysql.escapeId(this.dbName), function (err, rows, fields) {
 						if (err) {
 							this.log(chalkError(err));
 
@@ -338,13 +338,15 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 								this.log(chalkError(err));
 
 								return done(err);
-							} */
+							}
 
 							connection.end();
 
+							this.log(chalkSuccess('Database successfully created and WP installed!'));
+
 							done();
-						// }.bind(this));
-					// }.bind(this));
+						}.bind(this));
+					}.bind(this));
 				}.bind(this));
 			}.bind(this));
 		},
@@ -352,7 +354,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Sets up VHOST
 		 */
-		__setupVHOST: function () {
+		setupVHOST: function () {
 			this.log(chalkNormal('\n\nSetting up a VHOST pointing to http://' + this.localDomain + '/...'));
 
 			this.fs.copyTpl(this.templatePath('vhost.conf'), this.destinationPath('vhost.conf'), {
@@ -384,7 +386,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Initializes GIT
 		 */
-		__initGIT: function () {
+		initGIT: function () {
 			this.log(chalkNormal('\n\nInitializing GIT with username ' + this.gitUser + '...'));
 
 			var originURL = 'https://' + this.gitUser + '@bitbucket.org/' + this.gitTeam + '/' + this.appname + '.git';
@@ -412,7 +414,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Setup SleekWP as a GIT Submodule
 		 */
-		__sleekGitSubmodule: function () {
+		sleekGitSubmodule: function () {
 			this.log(chalkNormal('\n\nSetting up SleekWP as GIT Submodule...'));
 
 			var done = this.async();
@@ -433,7 +435,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * NPM Install
 		 */
-		__npmInstall: function () {
+		npmInstall: function () {
 			this.log(chalkNormal('\n\nRunning NPM Install on SleekWP...'));
 
 			var done = this.async();
@@ -459,7 +461,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Copies all SleekCSS config and its general.scss file to project folder
 		 */
-		__setupSleekCSS: function () {
+		setupSleekCSS: function () {
 			this.log(chalkNormal('\n\nSetting up SleekCSS config and general.scss...'));
 
 			var done = this.async();
@@ -502,7 +504,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Run Gulp
 		 */
-		__gulp: function () {
+		gulp: function () {
 			this.log(chalkNormal('\n\nRunning gulp'));
 
 			var done = this.async();
