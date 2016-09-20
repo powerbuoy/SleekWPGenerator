@@ -1,3 +1,5 @@
+// TODO: git submodule add https://github.com/powerbuoy/SleekWP sleek
+
 /**
  * Lib
  */
@@ -50,13 +52,11 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 	constructor: function () {
 		yeomanGenerator.Base.apply(this, arguments);
 
-		this.dbTblPrefix = randString(5).toLowerCase() + '_';
 		this.dbName = 'wp_' + this.appname;
 		this.localDomain = this.appname + '.dev';
 
 		this.log(chalkImportant('Welcome! Follow these easy steps and you\'ll soon have WordPress and SleekWP installed.'));
-		this.log(chalkNormal('Your domain will be http://' + this.localDomain + ', your theme name will be "' + this.appname + '"\nand I will also go ahead and create a database for WP called "' + this.dbName + '"\nwith a table prefix of ' + this.dbTblPrefix));
-		this.log(chalkNormal('Finally, your admin account will be inviseadmin:password'));
+		this.log(chalkNormal('Your domain will be http://' + this.localDomain + ', your theme name will be "' + this.appname + '"\nand I will also go ahead and create a database for WP called "' + this.dbName));
 	},
 
 	/**
@@ -69,20 +69,26 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 			{
 				type: 'input',
 				name: 'dbUser',
-				message: 'DataBase Username:',
+				message: 'Database Username:',
 				default: 'root'
 			},
 			{
 				type: 'input',
 				name: 'dbPass',
-				message: 'DataBase Password:',
+				message: 'Database Password:',
 				default: 'bamsepuck'
 			},
 			{
 				type: 'input',
 				name: 'dbHost',
-				message: 'DataBase Host:',
+				message: 'Database Host:',
 				default: 'localhost'
+			},
+			{
+				type: 'input',
+				name: 'dbTblPrefix',
+				message: 'Database Table Prefix',
+				default: randString(5).toLowerCase() + '_'
 			},
 			{
 				type: 'input',
@@ -98,6 +104,12 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 			},
 			{
 				type: 'input',
+				name: 'wpUser',
+				message: 'WordPress username (password will be "password"):',
+				default: 'siteadmin'
+			},
+			{
+				type: 'input',
 				name: 'wpPlugins',
 				message: 'Comma separated list of WordPress plugins you would like to install:',
 				default: 'advanced-custom-fields, wordpress-seo, wp-smushit, duplicate-post, regenerate-thumbnails, post-type-archive-links, clean-image-filenames, simple-301-redirects'
@@ -109,6 +121,8 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 			this.gitUser = answers.gitUser;
 			this.gitTeam = answers.gitTeam;
 			this.gitPass = answers.gitPass;
+			this.wpUser = answers.wpUser;
+			this.dbTblPrefix = answers.dbTblPrefix;
 			this.wpPlugins = answers.wpPlugins.split(',');
 
 			done();
@@ -118,7 +132,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 	/**
 	 * Downloads WP
 	 */
-	downloadWP: function () {
+	__downloadWP: function () {
 		this.log(chalkNormal('Downloading latest WordPress...'));
 
 		var done = this.async();
@@ -143,9 +157,13 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 				fs.remove(this.destinationPath('wordpress'));
 
 				// Also remove the default themes
-				fs.remove(this.destinationPath('wp-content/themes/twentyfifteen'));
+				fs.remove(this.destinationPath('wp-content/themes/twentythirteen'));
 				fs.remove(this.destinationPath('wp-content/themes/twentyfourteen'));
+				fs.remove(this.destinationPath('wp-content/themes/twentyfifteen'));
 				fs.remove(this.destinationPath('wp-content/themes/twentysixteen'));
+
+				// Finally create an uploads dir with 755
+				fs.mkdirs(this.destinationPath('wp-content/uploads'), {mode: 0755});
 
 				this.log(chalkSuccess('WordPress installed!'));
 
@@ -155,40 +173,9 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 	},
 
 	/**
-	 * Installs SleekWP
-	 */
-	installSleekWP: function () {
-		this.log(chalkNormal('\n\nInstalling SleekWP...'));
-
-		var done = this.async();
-
-		// Fetch latest version of SleekWP from GitHub
-		this.remote('powerbuoy', 'SleekWP', 'master', function (err, remote) {
-			if (err) {
-				this.log(chalkError('ERROR: ' + err));
-
-				return done(err);
-			}
-
-			// Copy SleekWP to theme directory
-			fs.copy(this.cacheRoot() + '/powerbuoy/SleekWP/master/', this.destinationPath('wp-content/themes/sleek/'), function (err) {
-				if (err) {
-					this.log(chalkError('ERROR: ' + err));
-
-					return done(err);
-				}
-
-				this.log(chalkSuccess('SleekWP installed!'));
-
-				done();
-			}.bind(this));
-		}.bind(this), true);
-	},
-
-	/**
 	 * Installs SleekChild
 	 */
-	installSleekChild: function () {
+	__installSleekChild: function () {
 		this.log(chalkNormal('\n\nInstalling SleekChild...'));
 
 		var done = this.async();
@@ -218,7 +205,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 	/**
 	 * Installs plugins
 	 */
-	installWPPlugins: function () {
+	__installWPPlugins: function () {
 		this.log(chalkNormal('\n\nInstalling WordPress plug-ins...'));
 
 		var done = this.async();
@@ -254,7 +241,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		/**
 		 * Rewrites SleekChild-functions
 		 */
-		rewriteSleekChild: function () {
+		__rewriteSleekChild: function () {
 			this.log(chalkNormal('\n\nRewriting SleekChild functions to ' + this.appname + '...'));
 
 			var functionsPath = this.destinationPath('wp-content/themes/' + this.appname + '/functions.php');
@@ -291,13 +278,22 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 				dbPass: this.dbPass,
 				dbHost: this.dbHost,
 				dbTblPrefix: this.dbTblPrefix
-			});
+			}, function (err, goo, bar) {
+				this.log(chalkError(err));
+				this.log(chalkError(goo));
+				this.log(chalkError(bar));
+			}.bind(this));
 
 			this.fs.copyTpl(this.templatePath('db.sql'), this.destinationPath('db.sql'), {
 				appname: this.appname,
 				localDomain: this.localDomain,
-				dbTblPrefix: this.dbTblPrefix
-			});
+				dbTblPrefix: this.dbTblPrefix,
+				wpUser: this.wpUser
+			}, function (err, goo, bar) {
+				this.log(chalkError(err));
+				this.log(chalkError(goo));
+				this.log(chalkError(bar));
+			}.bind(this));
 
 			this.fs.copyTpl(this.templatePath('_htaccess'), this.destinationPath('.htaccess'));
 			this.fs.copyTpl(this.templatePath('_gitignore'), this.destinationPath('.gitignore'));
@@ -338,7 +334,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 						return done(err);
 					}
 
-					connection.query('USE ' + mysql.escapeId(this.dbName), function (err, rows, fields) {
+					/* connection.query('USE ' + mysql.escapeId(this.dbName), function (err, rows, fields) {
 						if (err) {
 							this.log(chalkError(err));
 
@@ -350,13 +346,13 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 								this.log(chalkError(err));
 
 								return done(err);
-							}
+							} */
 
 							connection.end();
 
 							done();
-						}.bind(this));
-					}.bind(this));
+					//	}.bind(this));
+					// }.bind(this));
 				}.bind(this));
 			}.bind(this));
 		},
@@ -370,14 +366,14 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 			this.fs.copyTpl(this.templatePath('vhost.conf'), this.destinationPath('vhost.conf'), {
 				localDomain: this.localDomain,
 				path: this.destinationRoot() + '/',
-				appName: this.appname
+				appname: this.appname
 			});
 
 			// TODO: Unable to run this without SUDO
 			/* this.spawnCommand('cp', ['vhost', '/etc/apache2/sites-available/' + this.appname + '.conf'], {
 				cwd: this.destinationRoot()
 			}).on('close', function () {
-				fs.remove(this.destinationPath('vhost'));
+				fs.remove(this.destinationPath('vhost.conf'));
 
 				this.spawnCommand('a2ensite', [this.appname]).on('close', function () {
 					this.spawnCommand('service', ['apache2', 'reload']).on('close', function () {
@@ -417,6 +413,27 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 							done();
 						}.bind(this));
 					}.bind(this));
+				}.bind(this));
+			}.bind(this));
+		},
+
+		/**
+		 * Setup SleekWP as a GIT Submodule
+		 */
+		sleekGitSubmodule: function () {
+			this.log(chalkNormal('\n\nSetting up SleekWP as GIT Submodule...'));
+
+			var done = this.async();
+
+			this.spawnCommand('git', ['submodule', 'add', 'https://github.com/powerbuoy/SleekWP', 'wp-content/themes/sleek'], {
+				cwd: this.destinationRoot()
+			}).on('close', function () {
+				this.spawnCommand('git', ['submodule', 'update', '--init', '--recursive'], {
+					cwd: this.destinationRoot()
+				}).on('close', function () {
+					this.log(chalkSuccess('SleekWP Installed as GIT Submodule!'));
+
+					done();
 				}.bind(this));
 			}.bind(this));
 		},
