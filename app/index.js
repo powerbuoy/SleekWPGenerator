@@ -246,11 +246,12 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 
 			var functionsPath = this.destinationPath('wp-content/themes/' + this.appname + '/functions.php');
 			var stylePath = this.destinationPath('wp-content/themes/' + this.appname + '/style.css');
+			var acfPath = this.destinationPath('wp-content/themes/' + this.appname + '/acf.php');
 
 			replace({
 				regex: 'sleek_child',
 				replacement: this.appname,
-				paths: [functionsPath, stylePath],
+				paths: [functionsPath, stylePath, acfPath],
 				recursive: false,
 				silent: true
 			});
@@ -459,21 +460,18 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		},
 
 		/**
-		 * Copies all SleekCSS config and its general.scss file to project folder
+		 * Merges SleekCSS config to project folder
 		 */
 		setupSleekCSS: function () {
-			this.log(chalkNormal('\n\nSetting up SleekCSS config and general.scss...'));
+			this.log(chalkNormal('\n\nSetting up SleekCSS config...'));
 
 			var done = this.async();
 
-			// Remove SleekChild's default all.scss
+			// Remove SleekChild's default all.scss (it doesn't include sleek-css)
 			fs.remove(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/all.scss'));
 
 			// Copy our template (based on the theme using SleekCSS)
 			this.fs.copyTpl(this.templatePath('all.scss'), this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/all.scss'));
-
-			// Move SleekCSS's general.scss to our sass directory
-			fs.copySync(this.destinationPath('wp-content/themes/' + this.appname + '/node_modules/sleek-css/general.scss'), this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/general.scss'));
 
 			// Create directories for components and modules
 			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/modules/_header.scss'), '/**\n * Header\n */\n#header {\n\t@include section;\n}');
@@ -489,6 +487,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 
 				fs.writeFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/config.scss'), output);
 
+				// Remove !default
 				replace({
 					regex: ' !default;',
 					replacement: ';',
