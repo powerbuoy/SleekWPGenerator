@@ -246,7 +246,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 
 			var functionsPath = this.destinationPath('wp-content/themes/' + this.appname + '/functions.php');
 			var stylePath = this.destinationPath('wp-content/themes/' + this.appname + '/style.css');
-			var acfPath = this.destinationPath('wp-content/themes/' + this.appname + '/acf.php');
+			var acfPath = this.destinationPath('wp-content/themes/' + this.appname + '/acf/subtitle.definition.php');
 
 			replace({
 				regex: 'sleek_child',
@@ -474,8 +474,8 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 			this.fs.copyTpl(this.templatePath('all.scss'), this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/all.scss'));
 
 			// Create directories for components and modules
-			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/modules/_header.scss'), '/**\n * Header\n */\n#header {\n\t@include section;\n}');
-			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/components/_my-component.scss'), '/**\n * Example Component\n */\n.my-component {\n\tbackground: blue;\n}');
+			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/modules/header.scss'), '/**\n * Header\n */\n#header {\n\t@include section;\n\tbackground: #333;\n\tcolor: #fff;\n\ta {\n\t\tcolor: #fff;\n\t}\n}');
+			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/components/my-component.scss'), '/**\n * Example Component\n */\n.my-component {\n\tbackground: blue;\n}');
 
 			// Generate a config.scss from all SleekCSS/config/*.scss files
 			glob(this.destinationPath('wp-content/themes/' + this.appname + '/node_modules/sleek-css/config/*.scss'), {}, function (err, files) {
