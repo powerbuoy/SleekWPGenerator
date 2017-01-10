@@ -246,7 +246,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 
 			var functionsPath = this.destinationPath('wp-content/themes/' + this.appname + '/functions.php');
 			var stylePath = this.destinationPath('wp-content/themes/' + this.appname + '/style.css');
-			var acfPath = this.destinationPath('wp-content/themes/' + this.appname + '/acf/subtitle.definition.php');
+			var acfPath = this.destinationPath('wp-content/themes/' + this.appname + '/acf/my_group.php');
 
 			replace({
 				regex: 'sleek_child',
@@ -525,7 +525,8 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 	end: function () {
 		// TODO: Automatically copy vhost
 		this.log(chalkError('\n\nUnable to copy Vhost, please run this command manually:'));
-		this.log(chalkCommand('echo "127.0.0.1 ' + this.appname + '.dev" | sudo tee --append /etc/hosts && sudo mv vhost.conf /etc/apache2/sites-available/' + this.appname + '.conf && sudo a2ensite ' + this.appname + ' && sudo service apache2 reload'));
+		// this.log(chalkCommand('Ubuntu: echo "127.0.0.1 ' + this.appname + '.dev" | sudo tee --append /etc/hosts && sudo mv vhost.conf /etc/apache2/sites-available/' + this.appname + '.conf && sudo a2ensite ' + this.appname + ' && sudo service apache2 reload'));
+		this.log(chalkCommand('sudo -- sh -c -e "echo \'127.0.0.1 newtest.dev\' >> /etc/hosts" && sudo mv vhost.conf /etc/apache2/vhosts/' + this.appname + '.conf && sudo apachectl restart'));
 
 		// TODO: Use Bitbucket & WPEngine API's to do this automatically
 		this.log(chalkNormal('\n\nGIT is set up locally with remote pointing to Bitbucket and WPEngine under your appname (' + this.appname + '). You need to create a ' + this.appname + ' repository with owner ' + this.gitTeam + ', and then push to that repo:'));
