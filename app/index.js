@@ -1,5 +1,3 @@
-// TODO: git submodule add https://github.com/powerbuoy/SleekWP sleek
-
 /**
  * Lib
  */
@@ -246,12 +244,13 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 
 			var functionsPath = this.destinationPath('wp-content/themes/' + this.appname + '/functions.php');
 			var stylePath = this.destinationPath('wp-content/themes/' + this.appname + '/style.css');
-			var acfPath = this.destinationPath('wp-content/themes/' + this.appname + '/acf/my_group.php');
+			var acfPath = this.destinationPath('wp-content/themes/' + this.appname + '/acf/page-meta.php');
+			var acfPath2 = this.destinationPath('wp-content/themes/' + this.appname + '/acf/video.php');
 
 			replace({
 				regex: 'sleek_child',
 				replacement: this.appname,
-				paths: [functionsPath, stylePath, acfPath],
+				paths: [functionsPath, stylePath, acfPath, acfPath2],
 				recursive: false,
 				silent: true
 			});
