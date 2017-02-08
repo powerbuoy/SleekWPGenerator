@@ -159,6 +159,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 				fs.remove(this.destinationPath('wp-content/themes/twentyfourteen'));
 				fs.remove(this.destinationPath('wp-content/themes/twentyfifteen'));
 				fs.remove(this.destinationPath('wp-content/themes/twentysixteen'));
+				fs.remove(this.destinationPath('wp-content/themes/twentyseventeen'));
 
 				// Finally create an uploads dir with 755
 				fs.mkdirs(this.destinationPath('wp-content/uploads'), {mode: 0755});
@@ -244,13 +245,11 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 
 			var functionsPath = this.destinationPath('wp-content/themes/' + this.appname + '/functions.php');
 			var stylePath = this.destinationPath('wp-content/themes/' + this.appname + '/style.css');
-			var acfPath = this.destinationPath('wp-content/themes/' + this.appname + '/acf/page-meta.php');
-			var acfPath2 = this.destinationPath('wp-content/themes/' + this.appname + '/acf/video.php');
 
 			replace({
 				regex: 'sleek_child',
 				replacement: this.appname,
-				paths: [functionsPath, stylePath, acfPath, acfPath2],
+				paths: [functionsPath, stylePath],
 				recursive: false,
 				silent: true
 			});
@@ -263,7 +262,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 				silent: true
 			});
 
-			this.log(chalkSuccess('Function names and translation domain changed to "' + this.appname + '"!'));
+			this.log(chalkSuccess('Function names and textdomain changed to "' + this.appname + '"!'));
 		},
 
 		/**
