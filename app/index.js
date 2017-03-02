@@ -179,7 +179,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 
 		var done = this.async();
 
-		this.remote('powerbuoy', 'SleekChild', 'master', function (err, remote) {
+		this.remote('powerbuoy', 'sleek-child', 'master', function (err, remote) {
 			if (err) {
 				this.log(chalkError('ERROR: ' + err));
 
@@ -187,7 +187,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 			}
 
 			// Copy SleekChild to theme directory
-			fs.copy(this.cacheRoot() + '/powerbuoy/SleekChild/master/', this.destinationPath('wp-content/themes/' + this.appname + '/'), function (err) {
+			fs.copy(this.cacheRoot() + '/powerbuoy/sleek-child/master/', this.destinationPath('wp-content/themes/' + this.appname + '/'), function (err) {
 				if (err) {
 					this.log(chalkError('ERROR: ' + err));
 
@@ -418,7 +418,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 
 			var done = this.async();
 
-			this.spawnCommand('git', ['submodule', 'add', 'https://github.com/powerbuoy/SleekWP', 'wp-content/themes/sleek'], {
+			this.spawnCommand('git', ['submodule', 'add', 'https://github.com/powerbuoy/sleek', 'wp-content/themes/sleek'], {
 				cwd: this.destinationRoot()
 			}).on('close', function () {
 				this.spawnCommand('git', ['submodule', 'update', '--init', '--recursive'], {
