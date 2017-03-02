@@ -110,7 +110,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 				type: 'input',
 				name: 'wpPlugins',
 				message: 'Comma separated list of WordPress plugins you would like to install:',
-				default: 'advanced-custom-fields, wordpress-seo, wp-smushit, duplicate-post, regenerate-thumbnails, post-type-archive-links, clean-image-filenames, simple-301-redirects'
+				default: 'wp-smushit, clean-image-filenames, post-type-archive-links, duplicate-post, regenerate-thumbnails'
 			}
 		], function (answers) {
 			this.dbUser = answers.dbUser;
