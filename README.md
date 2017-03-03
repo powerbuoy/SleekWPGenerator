@@ -1,2 +1,1 @@
-# SleekWPGenerator
-Yeoman Generator for SleekWP, SleekChild and SleekCSS
+Yeoman Generator for SleekWP, SleekChild and SleekCSS.
