@@ -465,16 +465,6 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 
 			var done = this.async();
 
-			// Remove SleekChild's default all.scss (it doesn't include sleek-css)
-			fs.remove(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/all.scss'));
-
-			// Copy our template (based on the theme using SleekCSS)
-			this.fs.copyTpl(this.templatePath('all.scss'), this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/all.scss'));
-
-			// Create directories for components and modules
-			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/modules/header.scss'), '/**\n * Header\n */\n#header {\n\t@include section;\n\tbackground: #333;\n\tcolor: #fff;\n\ta {\n\t\tcolor: #fff;\n\t}\n}');
-			fs.outputFileSync(this.destinationPath('wp-content/themes/' + this.appname + '/src/sass/components/my-component.scss'), '/**\n * Example Component\n */\n.my-component {\n\tbackground: blue;\n}');
-
 			// Generate a config.scss from all SleekCSS/config/*.scss files
 			glob(this.destinationPath('wp-content/themes/' + this.appname + '/node_modules/sleek-css/config/*.scss'), {}, function (err, files) {
 				var output = '';
