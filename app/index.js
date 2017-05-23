@@ -104,7 +104,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 				type: 'input',
 				name: 'wpUser',
 				message: 'WordPress username (password will be "password"):',
-				default: 'siteadmin'
+				default: 'inviseadmin'
 			},
 			{
 				type: 'input',
