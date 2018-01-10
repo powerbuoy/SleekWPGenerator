@@ -51,7 +51,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		yeomanGenerator.Base.apply(this, arguments);
 
 		this.dbName = 'wp_' + this.appname;
-		this.localDomain = this.appname + '.dev';
+		this.localDomain = this.appname + '.local';
 
 		this.log(chalkImportant('Welcome! Follow these easy steps and you\'ll soon have WordPress and SleekWP installed.'));
 		this.log(chalkNormal('Your domain will be http://' + this.localDomain + ', your theme name will be "' + this.appname + '"\nand I will also go ahead and create a database for WP called "' + this.dbName));
@@ -110,8 +110,14 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 				type: 'input',
 				name: 'wpPlugins',
 				message: 'Comma separated list of WordPress plugins you would like to install:',
-				default: 'advanced-custom-fields, wp-smushit, clean-image-filenames, post-type-archive-links, wordpress-seo, redirection, duplicate-post, regenerate-thumbnails, simple-custom-post-order, enhanced-media-library, post-snippets, categories-in-hierarchical-order'
-			}
+				default: 'advanced-custom-fields, wp-smushit, clean-image-filenames, wordpress-seo, redirection, duplicate-post, regenerate-thumbnails, simple-history, post-type-archive-links'
+			},
+		/*	{
+				type: 'input',
+				name: 'branch',
+				message: 'Which sleek-child branch would you like to start with? "bibblan" has a lot of styling and things in place whereas "master" is clean.',
+				default: 'master'
+			} */
 		], function (answers) {
 			this.dbUser = answers.dbUser;
 			this.dbPass = answers.dbPass;
@@ -122,6 +128,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 			this.wpUser = answers.wpUser;
 			this.dbTblPrefix = answers.dbTblPrefix;
 			this.wpPlugins = answers.wpPlugins.split(',');
+			this.branch = 'master'; // answers.branch;
 
 			done();
 		}.bind(this));
@@ -173,13 +180,14 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 
 	/**
 	 * Installs SleekChild
+	 * TODO: Support for installing "bibblan"-branch (with bibblan-database)
 	 */
 	installSleekChild: function () {
 		this.log(chalkNormal('\n\nInstalling SleekChild...'));
 
 		var done = this.async();
 
-		this.remote('powerbuoy', 'sleek-child', 'master', function (err, remote) {
+		this.remote('powerbuoy', 'sleek-child', this.branch, function (err, remote) {
 			if (err) {
 				this.log(chalkError('ERROR: ' + err));
 
@@ -187,7 +195,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 			}
 
 			// Copy SleekChild to theme directory
-			fs.copy(this.cacheRoot() + '/powerbuoy/sleek-child/master/', this.destinationPath('wp-content/themes/' + this.appname + '/'), function (err) {
+			fs.copy(this.cacheRoot() + '/powerbuoy/sleek-child/' + this.branch + '/', this.destinationPath('wp-content/themes/' + this.appname + '/'), function (err) {
 				if (err) {
 					this.log(chalkError('ERROR: ' + err));
 
@@ -249,8 +257,8 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 			replace({
 				regex: 'sleek_child',
 				replacement: this.appname,
-				paths: [functionsPath, stylePath],
-				recursive: false,
+				paths: [functionsPath, stylePath], // TODO: entire theme folder
+				recursive: false, // TODO: true
 				silent: true
 			});
 
@@ -513,8 +521,8 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 	end: function () {
 		// TODO: Automatically copy vhost
 		this.log(chalkError('\n\nUnable to copy Vhost, please run this command manually:'));
-		// this.log(chalkCommand('Ubuntu: echo "127.0.0.1 ' + this.appname + '.dev" | sudo tee --append /etc/hosts && sudo mv vhost.conf /etc/apache2/sites-available/' + this.appname + '.conf && sudo a2ensite ' + this.appname + ' && sudo service apache2 reload'));
-		this.log(chalkCommand('sudo -- sh -c -e "echo \'127.0.0.1 ' + this.appname + '.dev\' >> /etc/hosts" && sudo mv vhost.conf /etc/apache2/vhosts/' + this.appname + '.conf && sudo apachectl restart'));
+		// this.log(chalkCommand('Ubuntu: echo "127.0.0.1 ' + this.appname + '.local" | sudo tee --append /etc/hosts && sudo mv vhost.conf /etc/apache2/sites-available/' + this.appname + '.conf && sudo a2ensite ' + this.appname + ' && sudo service apache2 reload'));
+		this.log(chalkCommand('sudo -- sh -c -e "echo \'127.0.0.1 ' + this.appname + '.local\' >> /etc/hosts" && sudo mv vhost.conf /etc/apache2/vhosts/' + this.appname + '.conf && sudo apachectl restart'));
 
 		// TODO: Use Bitbucket & WPEngine API's to do this automatically
 		this.log(chalkNormal('\n\nGIT is set up locally with remote pointing to Bitbucket and WPEngine under your appname (' + this.appname + '). You need to create a ' + this.appname + ' repository with owner ' + this.gitTeam + ', and then push to that repo:'));
