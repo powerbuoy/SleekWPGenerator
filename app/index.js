@@ -110,7 +110,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 				type: 'input',
 				name: 'wpPlugins',
 				message: 'Comma separated list of WordPress plugins you would like to install:',
-				default: 'advanced-custom-fields, wp-smushit, clean-image-filenames, wordpress-seo, redirection, duplicate-post, regenerate-thumbnails, simple-history, post-type-archive-links'
+				default: 'advanced-custom-fields, wp-smushit, clean-image-filenames, wordpress-seo, redirection, duplicate-post, regenerate-thumbnails, simple-history, post-type-archive-links, enable-media-replace'
 			},
 		/*	{
 				type: 'input',
@@ -473,7 +473,7 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 
 			var done = this.async();
 
-			// Generate a config.scss from all SleekCSS/config/*.scss files
+			// Generate a config.scss from all sleek-css/config/*.scss files
 			glob(this.destinationPath('wp-content/themes/' + this.appname + '/node_modules/sleek-css/config/*.scss'), {}, function (err, files) {
 				var output = '';
 
