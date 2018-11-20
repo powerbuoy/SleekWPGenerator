@@ -444,25 +444,17 @@ var SleekWPGenerator = yeomanGenerator.Base.extend({
 		 * NPM Install
 		 */
 		npmInstall: function () {
-			this.log(chalkNormal('\n\nRunning NPM Install on SleekWP...'));
+			this.log(chalkNormal('\n\nRunning NPM Install...'));
 
 			var done = this.async();
 
-			// Run NPM Install on SleekWP
+			// Run NPM Install on child theme
 			this.spawnCommand('npm', ['install'], {
-				cwd: this.destinationPath('wp-content/themes/sleek/')
+				cwd: this.destinationPath('wp-content/themes/' + this.appname + '/')
 			}).on('close', function () {
-				this.log(chalkSuccess('NPM Install ran successfully on SleekWP!'));
-				this.log(chalkNormal('\n\nRunning NPM Install on child theme...'));
+				this.log(chalkSuccess('NPM Install ran successfully!'));
 
-				// Run NPM Install on child theme
-				this.spawnCommand('npm', ['install'], {
-					cwd: this.destinationPath('wp-content/themes/' + this.appname + '/')
-				}).on('close', function () {
-					this.log(chalkSuccess('NPM Install ran successfully on child theme!'));
-
-					done();
-				}.bind(this));
+				done();
 			}.bind(this));
 		},
 
