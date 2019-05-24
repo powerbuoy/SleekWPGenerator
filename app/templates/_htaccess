@@ -1,6 +1,14 @@
+php_value upload_max_filesize 64M
+php_value post_max_size 64M
+
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteBase /
+
+# Route wp-content to live site
+# RewriteCond %{REQUEST_URI} ^/wp-content/uploads/[^\/]*/.*\$
+# RewriteRule ^(.*)\$ ${LIVESITEURL}/\$1 [QSA,L]
+
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

@@ -2,7 +2,12 @@
 .htaccess
 .vagrant
 ubuntu-bionic-18.04-cloudimg-console.log
-db.sql
+*.sql
+
+# Ignore non essential plugins
+wp-content/plugins/*
+!wp-content/plugins/advanced-custom-fields-pro
+!wp-content/plugins/sitepress-multilingual-cms
 
 # Ignore WP core
 *~
